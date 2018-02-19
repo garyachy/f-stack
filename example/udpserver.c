@@ -13,6 +13,9 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
+#include "ff_config.h"
+#include "ff_api.h"
+
 #define BUFSIZE 1024
 #define PORT 9000
 
@@ -37,6 +40,8 @@ int main(int argc, char **argv) {
   int n; /* message byte size */
 
   portno = PORT;
+
+  ff_init(argc, argv);
 
   /* 
    * socket: create the parent socket 
