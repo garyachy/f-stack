@@ -46,7 +46,7 @@ int main(int argc, char **argv) {
   /* 
    * socket: create the parent socket 
    */
-  sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+  sockfd = ff_socket(AF_INET, SOCK_DGRAM, 0);
   if (sockfd < 0) 
     error("ERROR opening socket");
 
@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
    * Eliminates "ERROR on binding: Address already in use" error. 
    */
   optval = 1;
-  setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, 
+  ff_setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, 
 	     (const void *)&optval , sizeof(int));
 
   /*
@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
   /* 
    * bind: associate the parent socket with a port 
    */
-  if (bind(sockfd, (struct sockaddr *) &serveraddr, 
+  if (ff_bind(sockfd, (struct sockaddr *) &serveraddr, 
 	   sizeof(serveraddr)) < 0) 
     error("ERROR on binding");
 
@@ -84,7 +84,7 @@ int main(int argc, char **argv) {
      * recvfrom: receive a UDP datagram from a client
      */
     bzero(buf, BUFSIZE);
-    n = recvfrom(sockfd, buf, BUFSIZE, 0,
+    n = ff_recvfrom(sockfd, buf, BUFSIZE, 0,
 		 (struct sockaddr *) &clientaddr, &clientlen);
     if (n < 0)
       error("ERROR in recvfrom");
@@ -106,7 +106,7 @@ int main(int argc, char **argv) {
     /* 
      * sendto: echo the input back to the client 
      */
-    n = sendto(sockfd, buf, strlen(buf), 0, 
+    n = ff_sendto(sockfd, buf, strlen(buf), 0, 
 	       (struct sockaddr *) &clientaddr, clientlen);
     if (n < 0) 
       error("ERROR in sendto");
