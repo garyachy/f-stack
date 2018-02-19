@@ -14,6 +14,7 @@
 #include <arpa/inet.h>
 
 #define BUFSIZE 1024
+#define PORT 9000
 
 /*
  * error - wrapper for perror
@@ -35,14 +36,7 @@ int main(int argc, char **argv) {
   int optval; /* flag value for setsockopt */
   int n; /* message byte size */
 
-  /* 
-   * check command line arguments 
-   */
-  if (argc != 2) {
-    fprintf(stderr, "usage: %s <port>\n", argv[0]);
-    exit(1);
-  }
-  portno = atoi(argv[1]);
+  portno = PORT;
 
   /* 
    * socket: create the parent socket 
