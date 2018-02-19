@@ -11,7 +11,7 @@ function usage() {
 }
 
 conf=config.ini
-bin=./example/helloworld_udpserver
+bin=./example/helloworld
 
 while getopts "c:b:o:h" args
 do
