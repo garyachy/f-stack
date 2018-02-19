@@ -70,7 +70,7 @@ int main(int argc, char **argv) {
   /* 
    * bind: associate the parent socket with a port 
    */
-  if (ff_bind(sockfd, (struct sockaddr *) &serveraddr, 
+  if (ff_bind(sockfd, (struct linux_sockaddr *) &serveraddr, 
 	   sizeof(serveraddr)) < 0) 
     error("ERROR on binding");
 
@@ -85,7 +85,7 @@ int main(int argc, char **argv) {
      */
     bzero(buf, BUFSIZE);
     n = ff_recvfrom(sockfd, buf, BUFSIZE, 0,
-		 (struct sockaddr *) &clientaddr, &clientlen);
+		 (struct linux_sockaddr *) &clientaddr, &clientlen);
     if (n < 0)
       error("ERROR in recvfrom");
 
@@ -107,7 +107,7 @@ int main(int argc, char **argv) {
      * sendto: echo the input back to the client 
      */
     n = ff_sendto(sockfd, buf, strlen(buf), 0, 
-	       (struct sockaddr *) &clientaddr, clientlen);
+	       (struct linux_sockaddr *) &clientaddr, clientlen);
     if (n < 0) 
       error("ERROR in sendto");
   }
