@@ -11,7 +11,7 @@ function usage() {
 }
 
 conf=config.ini
-bin=./example/helloworld
+bin=./example/helloworld_udpserver
 
 while getopts "c:b:o:h" args
 do
@@ -57,10 +57,10 @@ do
     if ((proc_id == 0))
     then
         echo "${bin} --conf ${conf} --proc-type=primary --proc-id=${proc_id} ${others}"
-        ${bin} --conf ${conf} --proc-type=primary --proc-id=${proc_id} ${others} &
+        ${bin} --conf ${conf} --proc-type=primary --proc-id=${proc_id} ${others}
         sleep 5
     else
         echo "${bin} --conf ${conf} --proc-type=secondary --proc-id=${proc_id} ${others}"
-        ${bin} --conf ${conf} --proc-type=secondary --proc-id=${proc_id} ${others} &
+        ${bin} --conf ${conf} --proc-type=secondary --proc-id=${proc_id} ${others}
     fi
 done
