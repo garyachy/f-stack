@@ -19,6 +19,7 @@ all:
 	cc -O -gdwarf-2  -I../lib -o ${TARGET} main.c ${LIBS}
 	cc -O -gdwarf-2  -I../lib -o ${TARGET}_epoll main_epoll.c ${LIBS}
 	cc -O -gdwarf-2  -I../lib -o udp_server udp_server.c ${LIBS}
+	cc -O -gdwarf-2  -I../lib -o tcp_client tcp_client.c ${LIBS}
 
 .PHONY: clean
 clean:
