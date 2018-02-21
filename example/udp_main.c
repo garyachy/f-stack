@@ -85,15 +85,8 @@ int loop(void *arg)
 
 int main(int argc, char * argv[])
 {
-  char *conf;
-  if (argc < 2) {
-    conf = "./config.ini";
-  } else {
-    conf = argv[1];
-  }
-
   // init DPDK context and FreeBSD network stack
-  ff_init(conf, argc, argv);
+  ff_init(argc, argv);
 
   // create socket fd
   int sockfd = ff_socket(AF_INET, SOCK_DGRAM, 0);
