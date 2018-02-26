@@ -10,6 +10,7 @@
 
 #include "ff_config.h"
 #include "ff_api.h"
+#include <unistd.h>
 
 #define MAX_EVENTS 512
 
@@ -21,46 +22,45 @@ struct kevent events[MAX_EVENTS];
 int kq;
 int sockfd;
 
-char html[] =
-  "HTTP/1.1 200 OK\r\n"
-  "Server: F-Stack\r\n"
-  "Date: Sat, 25 Feb 2017 09:26:33 GMT\r\n"
-  "Content-Type: text/html\r\n"
-  "Content-Length: 439\r\n"
-  "Last-Modified: Tue, 21 Feb 2017 09:44:03 GMT\r\n"
-  "Connection: keep-alive\r\n"
-  "Accept-Ranges: bytes\r\n"
-  "\r\n"
-  "<!DOCTYPE html>\r\n"
-  "<html>\r\n"
-  "<head>\r\n"
-  "<title>Welcome to F-Stack!</title>\r\n"
-  "<style>\r\n"
-  "    body {  \r\n"
-  "        width: 35em;\r\n"
-  "        margin: 0 auto; \r\n"
-  "        font-family: Tahoma, Verdana, Arial, sans-serif;\r\n"
-  "    }\r\n"
-  "</style>\r\n"
-  "</head>\r\n"
-  "<body>\r\n"
-  "<h1>Welcome to F-Stack!</h1>\r\n"
-  "\r\n"
-  "<p>For online documentation and support please refer to\r\n"
-  "<a href=\"http://F-Stack.org/\">F-Stack.org</a>.<br/>\r\n"
-  "\r\n"
-  "<p><em>Thank you for using F-Stack.</em></p>\r\n"
-  "</body>\r\n"
-  "</html>";
+static char buff[1024*1024];
+static size_t sbytes = 64;
+static unsigned char counter = 0;
+
+int send_loop()
+{
+//  buff[0] = sbytes % 128;
+    if (counter == 127)
+{
+  counter = 0;
+}
+    buff[0] = counter++;
+
+    ff_write(sockfd, buff, sbytes);
+  //  usleep(1000);
+
+  //sbytes = (sbytes + 1) % 1024;
+
+  unsigned num = buff[0];
+  //printf("send %u bytes, %u\n", sbytes, num);
+}
+
+static unsigned long cur_count = 0;
+#define MAX_COUNT 200000
 
 int loop(void *arg)
 {
-  /* Wait for events to happen */
+    /* Wait for events to happen */
   unsigned nevents = ff_kevent(kq, NULL, 0, events, MAX_EVENTS, NULL);
-//  printf("send %u bytes\n", sizeof(html));
 
-      ff_write(sockfd, html, sizeof(html));
-
+  if (cur_count < MAX_COUNT)
+  {
+    send_loop();
+    cur_count++;
+  }
+  else
+{
+  printf("Sent %lu packets\n", cur_count);
+}
 }
 
 int main(int argc, char * argv[])
