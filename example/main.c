@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <sys/time.h>
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -12,7 +13,7 @@
 #include "ff_config.h"
 #include "ff_api.h"
 
-#define MAX_EVENTS 512
+#define MAX_EVENTS 51200
 
 /* kevent set */
 struct kevent kevSet;
@@ -54,6 +55,12 @@ char html[] =
 "</body>\r\n"
 "</html>";
 
+
+static unsigned long long num_packets = 0;
+static unsigned long long num_bytes = 0;
+
+
+static struct timeval  tv1, tv2;
 int loop(void *arg)
 {
     /* Wait for events to happen */
@@ -92,8 +99,17 @@ int loop(void *arg)
         } else if (event.filter == EVFILT_READ) {
             char buf[256];
             size_t readlen = ff_read(clientfd, buf, sizeof(buf));
-
-            ff_write(clientfd, html, sizeof(html));
+//	    gettimeofday(&tv2, NULL);
+            num_bytes += readlen;
+            num_packets ++;;
+	    float secs = (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 +
+		 (double) (tv2.tv_sec - tv1.tv_sec);
+            unsigned count = buf[0];
+            if (num_packets >= 80000)
+{
+	    printf("received: %d bytes: %u, %lu, %lu, %f, %f PPS, %f bytes/sec\n", readlen, count, num_packets, num_bytes, secs, num_packets/secs, num_bytes/secs);
+}
+        //    ff_write(clientfd, html, sizeof(html));
         } else {
             printf("unknown event: %8.8X\n", event.flags);
         }
@@ -136,6 +152,7 @@ int main(int argc, char * argv[])
     /* Update kqueue */
     ff_kevent(kq, &kevSet, 1, NULL, 0, NULL);
 
+    gettimeofday(&tv1, NULL);
     ff_run(loop, NULL);
     return 0;
 }
