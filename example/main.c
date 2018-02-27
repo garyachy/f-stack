@@ -105,9 +105,24 @@ int loop(void *arg)
             } while (available);
         } else if (event.filter == EVFILT_READ) {
             char buf[256];
+            if (num_bytes == 0)
+            {
+                gettimeofday(&tv1, NULL);
+            }
+
             size_t readlen = ff_read(clientfd, buf, sizeof(buf));
+            num_bytes += readlen;
+            num_packets++;
             buf[readlen] = 0;
-            printf("%s\n", buf);
+            //printf("%s\n", buf);
+
+            if (num_bytes == 1288880)
+            {
+                gettimeofday(&tv2, NULL);
+                float secs = (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 + (double) (tv2.tv_sec - tv1.tv_sec);
+                printf("Received %u messages, %u bytes, %f sec, %f B/s, %f Msg/sec \n", 
+                       num_packets, num_bytes, secs, num_bytes/secs, num_packets/secs);
+            }
         } else {
             printf("unknown event: %8.8X\n", event.flags);
         }
