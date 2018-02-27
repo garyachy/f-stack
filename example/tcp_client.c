@@ -22,26 +22,15 @@ struct kevent events[MAX_EVENTS];
 int kq;
 int sockfd;
 
-static char buff[1024*1024];
-static size_t sbytes = 64;
-static unsigned char counter = 0;
+static char buff[100] = "";
+static uint32_t counter = 0;
 
 int send_loop()
 {
-//  buff[0] = sbytes % 128;
-    if (counter == 127)
-{
-  counter = 0;
-}
-    buff[0] = counter++;
-
-    ff_write(sockfd, buff, sbytes);
-  //  usleep(1000);
-
-  //sbytes = (sbytes + 1) % 1024;
-
-  unsigned num = buff[0];
-  //printf("send %u bytes, %u\n", sbytes, num);
+    int ret = 0;
+    ret = snprintf(buff, sizeof(buff), "%u,",  counter);
+    ff_write(sockfd, buff, ret);
+    counter++;
 }
 
 static unsigned long cur_count = 0;
@@ -59,7 +48,7 @@ int loop(void *arg)
   }
   else
 {
-  printf("Sent %lu packets\n", cur_count);
+//  printf("Sent %lu packets\n", cur_count);
 }
 }
 
