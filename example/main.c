@@ -84,6 +84,10 @@ int loop(void *arg)
                         strerror(errno));
                     break;
                 }
+                else
+                {
+                    printf("accept\n");
+                }
 
                 /* Add to event list */
                 EV_SET(&kevSet, nclientfd, EVFILT_READ, EV_ADD, 0, 0, NULL);
@@ -93,23 +97,17 @@ int loop(void *arg)
                         strerror(errno));
                     return -1;
                 }
-
+                else
+                {
+                    printf("kevent\n");
+                }
                 available--;
             } while (available);
         } else if (event.filter == EVFILT_READ) {
             char buf[256];
             size_t readlen = ff_read(clientfd, buf, sizeof(buf));
-//	    gettimeofday(&tv2, NULL);
-            num_bytes += readlen;
-            num_packets ++;;
-	    float secs = (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 +
-		 (double) (tv2.tv_sec - tv1.tv_sec);
-            unsigned count = buf[0];
-            if (num_packets >= 80000)
-{
-	    printf("received: %d bytes: %u, %lu, %lu, %f, %f PPS, %f bytes/sec\n", readlen, count, num_packets, num_bytes, secs, num_packets/secs, num_bytes/secs);
-}
-        //    ff_write(clientfd, html, sizeof(html));
+            buf[readlen] = 0;
+            printf("%s\n", buf);
         } else {
             printf("unknown event: %8.8X\n", event.flags);
         }
