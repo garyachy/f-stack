@@ -111,12 +111,12 @@ int loop(void *arg)
             }
 
             size_t readlen = ff_read(clientfd, buf, sizeof(buf));
-            num_bytes += readlen;
+            num_bytes += readlen + 54;
             num_packets++;
             buf[readlen] = 0;
             //printf("%s\n", buf);
 
-            if (num_bytes == 1288880)
+            if (strstr(buf, "1999999"))
             {
                 gettimeofday(&tv2, NULL);
                 float secs = (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 + (double) (tv2.tv_sec - tv1.tv_sec);
