@@ -28,41 +28,46 @@ static uint32_t counter = 0;
 static unsigned long long num_bytes = 0;
 static struct timeval  tv1, tv2;
 
+#define MAX_COUNT 2000000
+
 int send_loop()
 {
     int ret = 0;
+
+    if (counter >= MAX_COUNT)
+    {
+      return 0;
+    }
 
     if (num_bytes == 0)
             {
                 gettimeofday(&tv1, NULL);
             }
-
-
+    
     ret = snprintf(buff, sizeof(buff), "%u,",  counter);
     ff_write(sockfd, buff, ret);
-    num_bytes += ret; 
+    num_bytes += ret + 54; 
     counter++;
 
-            if (num_bytes == 1288890)
+            if (counter == MAX_COUNT)
             {
                 gettimeofday(&tv2, NULL);
                 float secs = (double) (tv2.tv_usec - tv1.tv_usec) / 1000000 + (double) (tv2.tv_sec - tv1.tv_sec);
                 printf("Sent %u messages, %u bytes, %f sec, %f B/s, %f Msg/sec \n",
                        counter, num_bytes, secs, num_bytes/secs, counter/secs);
+                return 0;
             }
-
 
 }
 
 static unsigned long cur_count = 0;
-#define MAX_COUNT 200000
 
 int loop(void *arg)
 {
     /* Wait for events to happen */
   unsigned nevents = ff_kevent(kq, NULL, 0, events, MAX_EVENTS, NULL);
 
-  if (cur_count < MAX_COUNT)
+  for (int i = 0; i < 32; i++)
   {
     send_loop();
     cur_count++;
